@@ -1,0 +1,109 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+
+<!-- Breadcrumb Section Start -->
+<section class="breadcrumb-section pt-0">
+    <div class="container-fluid-lg">
+        <div class="row">
+            <div class="col-12">
+                <div class="breadcrumb-contain">
+                    <h2>Payment</h2>
+                    <nav>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'products:home' %}">
+                                    <i class="fa-solid fa-house"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">Payment</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Payment Section Start -->
+<section class="payment-section section-b-space">
+    <div class="container-fluid-lg">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="payment-details">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Payment Methods</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if messages %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% for message in messages %}
+                                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                                {{ message }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <!-- SSLCommerz Payment Form -->
+                                    <form method="POST" action="{% url 'orders:payment' order.id %}">
+                                        {% csrf_token %}
+                                        <p>Click the button below to proceed to the payment gateway. You'll be able to choose from various payment options including credit cards, mobile banking, and more.</p>
+                                        <div class="d-grid gap-2 mt-3">
+                                            <button type="submit" class="btn btn-primary" id="pay-button">
+                                                <i class="fa fa-credit-card me-2"></i> Proceed to Payment
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="order-summary">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Order Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Order Number</span>
+                                    <strong>{{ order.order_number }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Shipping Address</span>
+                                    <strong>{{ order.full_address }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>City</span>
+                                    <strong>{{ order.city }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Country</span>
+                                    <strong>{{ order.country }}</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Order Total</span>
+                                    <strong>${{ order.order_total }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Payment Section End -->
+
+{% endblock %}

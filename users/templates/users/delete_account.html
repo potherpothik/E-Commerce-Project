@@ -1,0 +1,49 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Delete Account{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Delete Your Account</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p>You are about to delete your account. This action cannot be undone and will result in:</p>
+                        <ul>
+                            <li>Permanent removal of your personal information</li>
+                            <li>Loss of your order history</li>
+                            <li>Removal of your saved addresses and payment methods</li>
+                            <li>Cancellation of any active subscriptions</li>
+                        </ul>
+                    </div>
+                    
+                    <p>Your account will be scheduled for deletion with a 14-day grace period. During this time, you can log in to cancel the deletion process.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Please enter your password to confirm:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="confirm" name="confirm" required>
+                            <label class="form-check-label" for="confirm">I understand that this action is permanent and cannot be undone.</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Delete My Account</button>
+                            <a href="{% url 'users:profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .container {
+            width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Thank You for Your Order!</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{ user.first_name }},</p>
+            <p>Your order has been received and is being processed. Here are your order details:</p>
+            
+            <h3>Order Information</h3>
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+            
+            <h3>Shipping Address</h3>
+            <p>
+                {{ user.first_name }} {{ user.last_name }}<br>
+                {{ order.address_line_1 }}<br>
+                {% if order.address_line_2 %}{{ order.address_line_2 }}<br>{% endif %}
+                {{ order.city }}, {{ order.postcode }}<br>
+                {{ order.country }}<br>
+                Phone: {{ order.mobile }}
+            </p>
+            
+            <h3>Order Summary</h3>
+            <table>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+                {% for item in order.orderproduct_set.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.product_price }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="2"><strong>Total:</strong></td>
+                    <td>${{ order.order_total }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="footer">
+            <p>If you have any questions, please contact our customer support.</p>
+            <p>&copy; 2023 E-Commerce Co., Ltd. All Rights Reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

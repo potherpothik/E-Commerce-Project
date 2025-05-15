@@ -1,0 +1,143 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}{{ tag.name }} Products - Hexashop{% endblock %}
+
+{% block content %}
+<!-- ***** Tag Banner Area Starts ***** -->
+<div class="page-heading" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>{{ tag.name }}</h2>
+                    <span>Products tagged with "{{ tag.name }}"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Tag Banner Area Ends ***** -->
+
+<!-- ***** Products Area Starts ***** -->
+<section class="section" id="products">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-heading">
+                    <h2>{{ tag.name }} Products</h2>
+                    <span>Check out all products tagged with "{{ tag.name }}"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            {% if products %}
+                {% for product in products %}
+                <div class="col-lg-4">
+                    <div class="item">
+                        <div class="thumb">
+                            <div class="hover-content">
+                                <ul>
+                                    <li><a href="{% url 'products:product_detail' product.slug %}"><i class="fa fa-eye"></i></a></li>
+                                    <li><a href="{% url 'products:product_detail' product.slug %}"><i class="fa fa-star"></i></a></li>
+                                    <li><a href="{% url 'cart:add_to_cart' product.id %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                </ul>
+                            </div>
+                            {% if product.images.first %}
+                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/product-placeholder.jpg' %}" alt="{{ product.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="down-content">
+                            <h4>{{ product.name }}</h4>
+                            <span>
+                                {% if product.discount_price %}
+                                    <del>${{ product.price }}</del> ${{ product.discount_price }}
+                                {% else %}
+                                    ${{ product.price }}
+                                {% endif %}
+                            </span>
+                            <ul class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= product.average_rating %}
+                                        <li><i class="fa fa-star"></i></li>
+                                    {% else %}
+                                        <li><i class="fa fa-star-o"></i></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-lg-12">
+                    <div class="no-products">
+                        <p>No products available with this tag.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if products.has_other_pages %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="pagination">
+                    <ul>
+                        {% if products.has_previous %}
+                            <li><a href="?page={{ products.previous_page_number }}"><i class="fa fa-angle-left"></i></a></li>
+                        {% endif %}
+                        
+                        {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                                <li class="active"><a href="#">{{ i }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if products.has_next %}
+                            <li><a href="?page={{ products.next_page_number }}"><i class="fa fa-angle-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- ***** Products Area Ends ***** -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add to cart functionality
+        $('.add-to-cart').on('click', function(e) {
+            e.preventDefault();
+            var productId = $(this).data('product-id');
+            
+            $.ajax({
+                url: '/cart/add/' + productId + '/',
+                method: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'quantity': 1
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Product added to cart successfully!');
+                    }
+                },
+                error: function() {
+                    alert('Error adding product to cart. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'products/base.html' %}
+
+{% block title %}OTP Verification{% endblock %}
+
+{% block content %}
+
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-heading about-page-heading" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>About Our Company</h2>
+                    <span>Awesome, clean &amp; creative HTML5 Template</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">OTP Verification</h2>
+                    <p class="text-center mb-4">Please enter the 6-digit code sent to your email/phone</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-center gap-2">
+                                {% for i in '123456'|make_list %}
+                                <input type="text" class="form-control text-center" style="width: 50px;" maxlength="1" pattern="[0-9]" required>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Verify OTP</button>
+                            <button type="button" class="btn btn-outline-primary">Resend OTP</button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Didn't receive the code?</p>
+                        <a href="#" class="text-decoration-none">Contact Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-focus next input when a digit is entered
+    document.querySelectorAll('input[type="text"]').forEach((input, index) => {
+        input.addEventListener('input', function() {
+            if (this.value.length === 1) {
+                const nextInput = document.querySelectorAll('input[type="text"]')[index + 1];
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !this.value) {
+                const prevInput = document.querySelectorAll('input[type="text"]')[index - 1];
+                if (prevInput) {
+                    prevInput.focus();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %} 

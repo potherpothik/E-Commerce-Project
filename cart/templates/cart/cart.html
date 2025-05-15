@@ -1,0 +1,175 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block content %}
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-heading" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>Your Shopping Cart</h2>
+                    <span>Review your items and proceed to checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+
+<!-- ***** Cart Items Area Starts ***** -->
+<section class="section" id="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-heading">
+                    <h2>Cart Items</h2>
+                    <span>Products you've added to your cart</span>
+                </div>
+            </div>
+        </div>
+        
+        {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-items">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>
+                                    <div class="product-info">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80">
+                                        <div>
+                                            <h5>{{ item.product.name }}</h5>
+                                            {% if item.variant_data %}
+                                                <small>
+                                                    {% for key, value in item.variant_data.items %}
+                                                        {{ key }}: {{ value }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${{ item.product.price }}</td>
+                                <td>
+                                    <form method="POST" action="#" class="quantity-form">
+                                        {% csrf_token %}
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10" class="form-control">
+                                        <button type="submit" class="btn btn-sm btn-primary mt-2">Update</button>
+                                    </form>
+                                </td>
+                                <td>${{ item.subtotal }}</td>
+                                <td>
+                                    <form method="POST" action="#" class="remove-form">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4>Order Summary</h4>
+                    <div class="summary-item">
+                        <span>Subtotal</span>
+                        <span>${{ subtotal }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Tax</span>
+                        <span>${{ tax }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping</span>
+                        <span>${{ shipping }}</span>
+                    </div>
+                    <div class="summary-item total">
+                        <span>Total</span>
+                        <span>${{ total }}</span>
+                    </div>
+                    <div class="checkout-button">
+                        <a href="#" class="btn btn-primary btn-lg btn-block">Proceed to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="empty-cart text-center">
+                    <h3>Your cart is empty</h3>
+                    <p>Looks like you haven't added any items to your cart yet.</p>
+                    <a href="{% url 'products:products' %}" class="btn btn-primary">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- ***** Cart Items Area Ends ***** -->
+
+<style>
+.cart-items table {
+    width: 100%;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+}
+
+.product-info img {
+    margin-right: 15px;
+}
+
+.quantity-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 100px;
+}
+
+.cart-summary {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.summary-item.total {
+    font-weight: bold;
+    font-size: 18px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.checkout-button {
+    margin-top: 20px;
+}
+
+.empty-cart {
+    padding: 40px 0;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}All Products - Hexashop{% endblock %}
+
+{% block content %}
+<!-- ***** Products Banner Area Starts ***** -->
+<div class="page-heading" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>Our Products</h2>
+                    <span>Discover our amazing collection of products</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Products Banner Area Ends ***** -->
+
+<!-- ***** Products Area Starts ***** -->
+<section class="section" id="products">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-heading">
+                    <h2>All Products</h2>
+                    <span>Check out our entire collection of products</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="filters">
+                    <form method="get" action="{% url 'products:product_list' %}">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select name="category" class="form-control">
+                                    <option value="">All Categories</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if selected_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="brand" class="form-control">
+                                    <option value="">All Brands</option>
+                                    {% for b in brands %}
+                                        <option value="{{ b.id }}" {% if selected_brand == b.id %}selected{% endif %}>{{ b.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="sort" class="form-control">
+                                    <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                                    <option value="-name" {% if sort == '-name' %}selected{% endif %}>Name (Z-A)</option>
+                                    <option value="price" {% if sort == 'price' %}selected{% endif %}>Price (Low to High)</option>
+                                    <option value="-price" {% if sort == '-price' %}selected{% endif %}>Price (High to Low)</option>
+                                    <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest First</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            {% if products %}
+                {% for product in products %}
+                <div class="col-lg-4">
+                    <div class="item">
+                        <div class="thumb">
+                            <div class="hover-content">
+                                <ul>
+                                    <li><a href="{% url 'products:product_detail' product.slug %}"><i class="fa fa-eye"></i></a></li>
+                                    <li><a href="{% url 'cart:add_to_cart' product.id %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                </ul>
+                            </div>
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        </div>
+                        <div class="down-content">
+                            <h4>{{ product.name }}</h4>
+                            <span>${{ product.price }}</span>
+                            <ul class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= product.average_rating %}
+                                        <li><i class="fa fa-star"></i></li>
+                                    {% else %}
+                                        <li><i class="fa fa-star-o"></i></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-lg-12">
+                    <p>No products found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if products.paginator.num_pages > 1 %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="pagination">
+                    <ul>
+                        {% if products.has_previous %}
+                            <li><a href="?page={{ products.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"><i class="fa fa-angle-left"></i></a></li>
+                        {% endif %}
+                        
+                        {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                                <li class="active"><a href="#">{{ i }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if products.has_next %}
+                            <li><a href="?page={{ products.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"><i class="fa fa-angle-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+<!-- ***** Products Area Ends ***** -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add to cart functionality
+        $('.add-to-cart').on('click', function(e) {
+            e.preventDefault();
+            var productId = $(this).data('product-id');
+            
+            $.ajax({
+                url: '/cart/add/' + productId + '/',
+                method: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'quantity': 1
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Product added to cart successfully!');
+                    }
+                },
+                error: function() {
+                    alert('Error adding product to cart. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

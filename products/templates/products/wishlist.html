@@ -1,0 +1,83 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - Hexashop{% endblock %}
+
+{% block content %}
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-heading" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>My Wishlist</h2>
+                    <span>Your favorite products in one place</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+
+<!-- ***** Wishlist Items Area Starts ***** -->
+<section class="section" id="wishlist">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-heading">
+                    <h2>Wishlist Items</h2>
+                    <span>Products you've saved for later</span>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                {% if wishlist_items %}
+                    {% for item in wishlist_items %}
+                    <div class="col-lg-4">
+                        <div class="item">
+                            <div class="thumb">
+                                <div class="hover-content">
+                                    <ul>
+                                        <li><a href="{% url 'products:product_detail' item.product.slug %}"><i class="fa fa-eye"></i></a></li>
+                                        <li><a href="{% url 'add_to_cart' item.product.slug %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                        <li><a href="{% url 'products:add_to_wishlist' item.product.slug %}"><i class="fa fa-star"></i></a></li>
+                                    </ul>
+                                </div>
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/product-placeholder.jpg' %}" alt="{{ item.product.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="down-content">
+                                <h4>{{ item.product.name }}</h4>
+                                <span>${{ item.product.price }}</span>
+                                <ul class="stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= item.product.average_rating %}
+                                            <i class="fa fa-star"></i>
+                                        {% else %}
+                                            <i class="fa fa-star-o"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-lg-12">
+                        <div class="empty-wishlist">
+                            <h4>Your wishlist is empty</h4>
+                            <p>Browse our products and add items to your wishlist.</p>
+                            <a href="{% url 'products:product_list' %}" class="main-dark-button">Shop Now</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ***** Wishlist Items Area Ends ***** -->
+{% endblock %}
